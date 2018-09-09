@@ -136,6 +136,9 @@ B:
     if(lib_mem == NULL)
         goto cleanup;
 
+    if(elf_check(lib_mem, lib_path) < 0)
+        goto cleanup;
+
     //grab operation info
     for(op = operations; op != NULL; op = op->next) {
         if(grab_operation_info(exec_mem, lib_mem, p_info.base_addr, op) < 0) {

@@ -98,6 +98,26 @@ Elf32_Sym* find_symbol(uint8_t *mem, const char *sh_name, const char *sym_name) 
     return NULL;
 }
 
+
+int elf_check(uint8_t *lib_mem, const char *filename) {
+    Elf32_Ehdr *ehdr = (Elf32_Ehdr*)lib_mem;
+
+    if(memcmp(ehdr->e_ident, ELFMAG, SELFMAG) != 0) {
+        fprintf(stderr, "%s not ELF file\n", filename);
+        return -1;
+    }
+    if(ehdr->e_type != ET_DYN) {
+        fprintf(stderr, "%s e_type not ET_DYN\n", filename);
+        return -1;
+    }
+    if(ehdr->e_machine != EM_386) {
+        fprintf(stderr, "%s e_machine not EM_386\n", filename);
+        return -1;
+    }
+
+    return 0;
+}
+
 int grab_operation_info(uint8_t *exec_mem, uint8_t *lib_mem, uint32_t e_base_addr, operation *op) {
     Elf32_Ehdr *ehdr = (Elf32_Ehdr*)exec_mem;
 
