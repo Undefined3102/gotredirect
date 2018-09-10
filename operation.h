@@ -1,12 +1,6 @@
 #pragma once
 #include <stdint.h>
 
-typedef enum {
-    NO_ERROR,
-    MALLOC_ERROR,
-    FORMAT_ERROR
-} parse_error;
-
 typedef struct operation {
     char             *orig_func;
     char             *repl_func;
@@ -16,8 +10,6 @@ typedef struct operation {
     struct operation *next;
 } operation;
 
-void print_parse_error(parse_error error, char *str);
-operation* parse_operation(char *str, parse_error *error);
-
+operation* parse_operation(char *str);
 operation* push_operation(operation *root, operation *op);
 void free_operations(operation *root);

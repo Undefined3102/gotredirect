@@ -4,28 +4,14 @@
 
 #include "operation.h"
 
-void print_parse_error(parse_error error, char *str) {
-    switch(error) {
-        case NO_ERROR:
-            fputs("parse was successful", stderr);
-            break;
-        case MALLOC_ERROR:
-            perror("parse error. malloc");
-            break;
-        case FORMAT_ERROR:
-            fprintf(stderr, "%s have a wrong format. format: original_function,replacer_function,[patch_offset]\n", str);
-            break;
-    }
-}
-
-operation* parse_operation(char *str, parse_error *error) {
+operation* parse_operation(char *str) {
     operation *r;
     char *p;
     int i;
 
     r = malloc(sizeof(operation));
     if(r == NULL) {
-        *error = MALLOC_ERROR;
+        perror("malloc");
         goto error;
     }
     *r = (operation) {
@@ -37,7 +23,6 @@ operation* parse_operation(char *str, parse_error *error) {
         .next = NULL
     };
     i = 0;
-    *error = NO_ERROR;
 
     p = strtok(str, ",");
     while(p != NULL) {
@@ -55,12 +40,12 @@ operation* parse_operation(char *str, parse_error *error) {
     }
 
     if(i != 2 && i != 3) {
-        *error = FORMAT_ERROR;
+        fprintf(stderr, "%s have a wrong format. format: original_function,replacer_function,[patch_offset]\n", str);
         goto error;
     }
 
     if(r->orig_func == NULL || r->repl_func == NULL) {
-        *error = MALLOC_ERROR;
+        perror("strdup");
         goto error;
     }
 

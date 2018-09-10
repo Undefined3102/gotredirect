@@ -86,7 +86,6 @@ B:
     uint32_t exec_mem_size, lib_mem_size;
 
     operation *operations, *op;
-    parse_error error;
     int i;
 
     int status;
@@ -104,9 +103,10 @@ B:
     // parse command line's arguments
     pid               = atoi(argv[1]);
     lib_path          = realpath(argv[2], NULL);
+    operations        = NULL;
+    p_info.exec_name  = NULL;
     exec_mem          = NULL;
     lib_mem           = NULL;
-    operations        = NULL;
     orig_code         = NULL;
     patched_shellcode = NULL;
 
@@ -116,11 +116,9 @@ B:
     }
 
     for(i = 3; i < argc; i++) {
-        op = parse_operation(argv[i], &error);
-        if(op == NULL) {
-            print_parse_error(error, argv[i]);
+        op = parse_operation(argv[i]);
+        if(op == NULL)
             goto cleanup;
-        }
         operations = push_operation(operations, op);
     }
     // end of parsing
