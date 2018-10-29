@@ -1,8 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
+#include <fcntl.h>
 #include <string.h>
 #include <errno.h>
 #include <stdint.h>
+#include <sys/stat.h>
 #include <sys/ptrace.h>
 #include <sys/user.h>
 #include <sys/mman.h>
@@ -13,6 +16,38 @@
 #include "elf_utils.h"
 
 #define Word_align(x) ((x+3) & -4)
+
+void* mmap_read_file(const char *filename, uint32_t *size) {
+    int fd;
+    struct stat f_info;
+    void *mem;
+
+    mem = MAP_FAILED;
+
+    fd = open(filename, O_RDONLY);
+    if(fd < 0) {
+        perror("open");
+        goto cleanup;
+    }
+
+    if(fstat(fd, &f_info) < 0) {
+        perror("fstat");
+        goto cleanup;
+    }
+
+    mem = mmap(NULL, f_info.st_size, PROT_READ, MAP_PRIVATE, fd, 0); 
+    if(mem == MAP_FAILED) {
+        perror("mmap");
+        goto cleanup;
+    }
+
+    *size = f_info.st_size;
+cleanup:
+    if(fd >= 0) close(fd);
+    return (mem == MAP_FAILED ? NULL : mem);
+}
+
+
 int pid_read(pid_t pid, void *dst, const void *src, int len) {
     int sz = Word_align(len)/sizeof(long);
     long word;
@@ -134,7 +169,7 @@ B:
     if(lib_mem == NULL)
         goto cleanup;
 
-    if(elf_check(lib_mem, lib_path) < 0)
+    if(lib_check(lib_mem, lib_path) < 0)
         goto cleanup;
 
     //grab operation info
