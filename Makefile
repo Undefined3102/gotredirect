@@ -1,6 +1,6 @@
 CC=gcc
-CFLAGS=-std=c11 -Wall -O3 -D_DEFAULT_SOURCE
-LDFLAGS=
+CFLAGS=-std=c11 -Wall -D_DEFAULT_SOURCE
+LDFLAGS=-O3
 OBJ=$(patsubst %.c, %.o, $(wildcard *.c))
 TARGET=gotredirect
 .PHONY: all clean
