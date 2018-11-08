@@ -8,7 +8,7 @@ Load library, that compiled as position independent code, into victim process ad
 ```bash
 ./gotredirect 1234 payload.so puts,pay_puts,49
 ```
-Attach to the process with id 1234, load payload.so to it address space, then rewrite puts GOT entry by pay_puts address. Write real puts addres to pay_puts+49
+Attach to the process with id 1234, load payload.so to it address space, then rewrite puts GOT entry by pay_puts address. Write real puts address to pay_puts+49
 
 ```bash
 ./gotredirect 1234 payload.so puts,pay_puts printf,pay_f,49
@@ -19,4 +19,4 @@ Attach to the process with id 1234, load payload.so to it address space, then re
 2. make
 
 # License
-BSD4. Read LICENSE file
+BSD-3-Clause. Read LICENSE file
